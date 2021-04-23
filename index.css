@@ -7,20 +7,36 @@ body {
 body,
 :root {
   --primary: #0084ff;
+  --borders: #ccc;
+  --borders-light: #ddd;
+  --borders-dark: #999;
+  --light-background: #eee;
 
   font-family: "Source Sans Pro", sans-serif;
 }
 
+main {
+  overflow: hidden;
+}
+
 .header {
   position: relative;
+  display: flex;
+  align-items: center;
   width: 100%;
+  height: 80px;
+  background-color: var(--primary);
 }
 
 .header .logo {
-  padding: 10px;
+  margin-left: 10px;
   color: white;
   font-weight: 300;
   font-size: 32px;
-  letter-spacing: 0.1rem;
-  background-color: var(--primary);
+  letter-spacing: 1px;
+}
+
+.home-container {
+  display: flex;
+  width: 100%;
 }
