@@ -3,6 +3,17 @@ import { LitElement, css, html } from './base';
 const USERS = ['Omer', 'Tomer', 'Ofer', 'Someone'];
 
 export class UsersList extends LitElement {
+  static get properties() {
+    return {
+      onlineUsers: { type: Array }
+    };
+  }
+
+  constructor() {
+    super();
+    this.onlineUsers = [];
+  }
+
   static get styles() {
     return css`
       :host {
@@ -48,15 +59,15 @@ export class UsersList extends LitElement {
   }
 
   render() {
-    return html`
-      <div class="title">Online Users:</div>
-      ${USERS.map(
-        (user) => html`<div class="user">
-          <span class="status-indicator"></span>
-          ${user}
-        </div>`
-      )}
-    `;
+    return this.onlineUsers?.length === 0
+      ? html` <div>Please login to see connected users!</div> `
+      : html` <div class="title">Online Users:</div>
+          ${this.onlineUsers.map(
+            (user) => html`<div class="user">
+              <span class="status-indicator"></span>
+              ${user}
+            </div>`
+          )}`;
   }
 }
 
