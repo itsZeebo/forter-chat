@@ -57,8 +57,6 @@ async function sendMessage(sender, content, timestamp) {
         timestamp
       }
     });
-
-    console.log('inserted to es ' + sender, content, timestamp);
   } catch (exception) {
     console.error(exception);
   }
