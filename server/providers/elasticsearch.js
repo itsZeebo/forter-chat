@@ -5,13 +5,17 @@ let _client;
 
 function initClient() {
   _client = new Client({
-    cloud: {
-      id: process.env.ES_CLOUD_ID
-    },
-    auth: {
-      username: process.env.ES_USER,
-      password: process.env.ES_PASSWORD
-    }
+    // cloud: {
+    //   id: process.env.ES_CLOUD_ID
+    // },
+    // auth: {
+    //   username: process.env.ES_USER,
+    //   password: process.env.ES_PASSWORD
+    // },
+    node: 'http://localhost:9200',
+    pingTimeout: 30000,
+    maxRetries: 5,
+    resurrectStrategy: 'optimistic'
   });
 }
 
@@ -22,7 +26,6 @@ function initClient() {
  */
 async function loadChatHistory() {
   try {
-    const now = new Date();
     const result = await _client.search({
       index: 'chat-history',
       body: {
@@ -49,7 +52,7 @@ async function loadChatHistory() {
  */
 async function sendMessage(sender, content, timestamp) {
   try {
-    await _client.index({
+    const result = await _client.index({
       index: 'chat-history',
       body: {
         sender,
@@ -69,7 +72,7 @@ async function getAnswerForQuestion(phrase) {
       index: 'chat-history',
       body: {
         size: 1,
-        min_score: 1.9,
+        min_score: 2.5,
         query: {
           bool: {
             should: [
@@ -118,9 +121,14 @@ async function getAnswerForQuestion(phrase) {
             ],
             must_not: [
               {
-                regexp: {
+                match: {
+                  sender: question.sender
+                }
+              },
+              {
+                wildcard: {
                   content: {
-                    value: '*?*'
+                    value: '*\\?*'
                   }
                 }
               }

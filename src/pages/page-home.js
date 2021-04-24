@@ -8,14 +8,10 @@ import {
   registerToSocket
 } from '../providers/socket';
 
-const UNSUBSCRIBERS = [];
-
 export class PageHome extends PageElement {
   static get properties() {
     return {
-      username: { type: String },
-      onlineUsers: { type: Array },
-      messageHistory: { type: Array }
+      username: { type: String }
     };
   }
 
@@ -23,31 +19,6 @@ export class PageHome extends PageElement {
     super();
 
     this.username = null;
-    this.onlineUsers = null;
-    this.messageHistory = null;
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
-    UNSUBSCRIBERS.push(
-      registerToSocket(
-        'onlineUsers',
-        ([{ users }]) => (this.onlineUsers = users)
-      )
-    );
-    UNSUBSCRIBERS.push(
-      registerToSocket(
-        'getHistory',
-        ([{ messages }]) => (this.messageHistory = messages)
-      )
-    );
-  }
-
-  disconnectedCallback() {
-    super.disconnectedCallback();
-
-    // Unsubscribe from everything
-    UNSUBSCRIBERS.map((cb) => cb());
   }
 
   render() {
@@ -58,31 +29,38 @@ export class PageHome extends PageElement {
               <div class="title">
                 <img src="/images/logo.png" class="logo" />
                 Welcome to ChatApp!<br />
-                Please Enter your username to login:
+                Please Enter your username to start chatting:
               </div>
-              <input class="ca-input" type="text" id="username" />
-              <button class="ca-button" type="button" @click=${this._loginUser}>
-                Login
-              </button>
+              <form @submit=${this._loginUser}>
+                <input class="ca-input" type="text" id="username" />
+                <button
+                  class="ca-button"
+                  type="button"
+                  @click=${this._loginUser}
+                >
+                  Login
+                </button>
+              </form>
             </div>
           </div>`
         : ''}
-      <users-list
-        .currentUser=${this.username}
-        .onlineUsers=${this.onlineUsers}
-      ></users-list>
-      <chat-room
-        .currentUser=${this.username}
-        .messages=${this.messageHistory}
-      ></chat-room>
+      <users-list .currentUser=${this.username}></users-list>
+      <chat-room .currentUser=${this.username}></chat-room>
     </div>`;
   }
 
-  _loginUser() {
+  _loginUser(e) {
+    e.preventDefault();
+
     const username = document.getElementById('username').value.trim();
 
     if (!username) {
       alert('Username was not entered!');
+      return;
+    }
+
+    if (username === 'cleverBot') {
+      alert('Please choose another username..');
       return;
     }
 

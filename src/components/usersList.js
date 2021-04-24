@@ -1,7 +1,7 @@
+import { registerToSocket } from '../providers/socket';
 import { LitElement, css, html } from './base';
 
-const USERS = ['Omer', 'Tomer', 'Ofer', 'Someone'];
-
+const UNSUBSCRIBERS = [];
 export class UsersList extends LitElement {
   static get properties() {
     return {
@@ -14,6 +14,23 @@ export class UsersList extends LitElement {
     super();
     this.onlineUsers = null;
     this.currentUser = null;
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+
+    UNSUBSCRIBERS.push(
+      registerToSocket(
+        'onlineUsers',
+        ([{ users }]) => (this.onlineUsers = users)
+      )
+    );
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
+    UNSUBSCRIBERS.map((cb) => cb());
   }
 
   static get styles() {
@@ -83,7 +100,7 @@ export class UsersList extends LitElement {
                 : ''}
             </div>`
           )}`
-      : html` <div>Please login to see connected users!</div> `;
+      : html`<div>Please login to see connected users!</div>`;
   }
 }
 

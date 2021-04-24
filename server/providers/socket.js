@@ -49,8 +49,8 @@ function initSocketServer(httpServer) {
     });
 
     socket.on('message', async (content, timestamp) => {
-      sendMessage(_clients[socket.id], content, timestamp);
       _io.emit('message', _clients[socket.id], content, timestamp);
+      await sendMessage(_clients[socket.id], content, timestamp);
 
       // Bot functionality
       if (content.includes('?')) {
@@ -58,9 +58,10 @@ function initSocketServer(httpServer) {
 
         if (possibleAnswer) {
           const botMessage = cleverify(possibleAnswer.content);
+          const dateNow = new Date();
 
-          await sendMessage('cleverBot', botMessage, Date.now());
-          _io.emit('message', 'cleverBot', botMessage, Date.now());
+          await sendMessage('cleverBot', botMessage, dateNow);
+          _io.emit('message', 'cleverBot', botMessage, dateNow);
         }
       }
     });

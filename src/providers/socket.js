@@ -5,7 +5,9 @@ let _events = {};
 
 export function connect(user) {
   _socket = io(
-    config.environment === 'development' ? 'ws://localhost:8001' : '',
+    config.environment === 'development'
+      ? `ws://${window.location.hostname}:8001`
+      : '',
     {
       query: { username: user }
     }

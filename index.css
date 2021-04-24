@@ -37,6 +37,10 @@ main {
   letter-spacing: 1px;
 }
 
+.header img {
+  height: 70%;
+}
+
 .ca-input,
 .ca-button {
   height: 20px;
@@ -93,8 +97,19 @@ main {
   border-radius: 10px;
 }
 
-.login-container > * {
+.login-container > *:not(:last-child) {
   width: 100%;
+  margin-bottom: 10px;
+}
+
+.login-container form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.login-container input,
+.login-container button {
   margin-bottom: 10px;
 }
 

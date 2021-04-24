@@ -19,13 +19,29 @@ export class ChatRoom extends LitElement {
           ...(this.messages || []),
           { sender, content, timestamp }
         ];
+
+        if ('Notification' in window && Notification.permission === 'granted') {
+          const notify = new Notification('New message on ChatApp!', {
+            body: `${sender}: ${content}`,
+            icon: '/images/logo.png',
+            timestamp
+          });
+        }
       })
+    );
+
+    UNSUBSCRIBERS.push(
+      registerToSocket(
+        'getHistory',
+        ([{ messages }]) =>
+          (this.messages = [...(this.messages || []), ...messages])
+      )
     );
   }
 
   updated() {
     super.updated();
-    this.latestMessage.scrollIntoView();
+    this.latestMessage?.scrollIntoView();
   }
 
   disconnectedCallback() {
@@ -126,6 +142,10 @@ export class ChatRoom extends LitElement {
         height: 80px;
         background-color: white;
       }
+      .send-message form {
+        width: 100%;
+        display: flex;
+      }
       .ca-input,
       .ca-button {
         background-color: white;
@@ -176,18 +196,28 @@ export class ChatRoom extends LitElement {
             )}
           </div>
           <div class="send-message">
-            <input
-              class="ca-input"
-              type="text"
-              placeholder="Enter your message here.."
-              id="message"
-            />
-            <button @click=${this._sendMessage} class="ca-button">Send</button>
+            <form @submit=${this._sendMessage}>
+              <input
+                class="ca-input"
+                type="text"
+                placeholder="Enter your message here.."
+                id="message"
+              />
+              <button @click=${this._sendMessage} class="ca-button">
+                Send
+              </button>
+            </form>
           </div>
         `;
   }
 
-  _sendMessage() {
+  /**
+   *
+   * @param {Event} e
+   * @returns
+   */
+  _sendMessage(e) {
+    e.preventDefault();
     const messageContent = this.usernameInput.value.trim();
 
     if (!messageContent) {
