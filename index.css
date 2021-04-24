@@ -7,6 +7,7 @@ body {
 body,
 :root {
   --primary: #0084ff;
+  --primary-dark: #0c64b6;
   --borders: #ccc;
   --borders-light: #ddd;
   --borders-dark: #999;
@@ -36,7 +37,80 @@ main {
   letter-spacing: 1px;
 }
 
+.ca-input,
+.ca-button {
+  height: 20px;
+  padding: 5px 10px;
+  background-color: white;
+  border: 1px solid var(--primary);
+  border-radius: 5px;
+}
+
+.ca-button {
+  box-sizing: content-box;
+  color: white;
+  text-align: center;
+  background-color: var(--primary);
+  border: 1px solid var(--primary-dark);
+  cursor: pointer;
+}
+
 .home-container {
   display: flex;
   width: 100%;
+}
+
+.home-container .login-overlay {
+  position: absolute;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.9);
+  animation: appear 0.2s ease-out;
+}
+
+.home-container .logo {
+  display: block;
+  width: 150px;
+  margin: 0 auto 20px auto;
+}
+
+.login-overlay .login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  max-width: 90%;
+  height: 50%;
+  padding: 30px;
+  background-color: var(--light-background);
+  border: 1px solid var(--borders);
+  border-radius: 10px;
+}
+
+.login-container > * {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.login-overlay .title {
+  margin-bottom: 20px;
+  color: var(--primary);
+  font-size: 24px;
+  text-align: center;
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }

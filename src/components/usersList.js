@@ -5,17 +5,24 @@ const USERS = ['Omer', 'Tomer', 'Ofer', 'Someone'];
 export class UsersList extends LitElement {
   static get properties() {
     return {
-      onlineUsers: { type: Array }
+      onlineUsers: { type: Array },
+      currentUser: { type: String }
     };
   }
 
   constructor() {
     super();
-    this.onlineUsers = [];
+    this.onlineUsers = null;
+    this.currentUser = null;
   }
 
   static get styles() {
     return css`
+      @media (max-width: 767px) {
+        :host {
+          display: none !important;
+        }
+      }
       :host {
         width: 20%;
         max-width: 400px;
@@ -55,19 +62,28 @@ export class UsersList extends LitElement {
         margin-right: 10px;
         border-radius: 50%;
       }
+      .user .you {
+        color: var(--borders-dark);
+        font-style: italic;
+        margin-right: 5px;
+        font-size: 14px;
+      }
     `;
   }
 
   render() {
-    return this.onlineUsers?.length === 0
-      ? html` <div>Please login to see connected users!</div> `
-      : html` <div class="title">Online Users:</div>
-          ${this.onlineUsers.map(
+    return this.onlineUsers
+      ? html` <div class="title">Online Users:</div>
+          ${this.onlineUsers?.map(
             (user) => html`<div class="user">
               <span class="status-indicator"></span>
               ${user}
+              ${user === this.currentUser
+                ? html`<span class="you">- You</span>`
+                : ''}
             </div>`
-          )}`;
+          )}`
+      : html` <div>Please login to see connected users!</div> `;
   }
 }
 

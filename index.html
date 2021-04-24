@@ -5,12 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
 
-    <title>Dojo</title>
+    <title>ChatApp</title>
 
     <base href="/" />
 
     <script type="text/javascript">
-
       // Single Page Apps for GitHub Pages
       // MIT License
       // https://github.com/rafgraph/spa-github-pages
@@ -21,14 +20,21 @@
       // When the single page app is loaded further down in this file,
       // the correct url will be waiting in the browser's history for
       // the single page app to route accordingly.
-      const [, base = '', preview = '' ] = location.pathname.split('/');
+      const [, base = '', preview = ''] = location.pathname.split('/');
 
       if (preview.includes('deploy-preview')) {
-        document.querySelector('base').setAttribute('href', `/${base}/${preview}/`);
+        document
+          .querySelector('base')
+          .setAttribute('href', `/${base}/${preview}/`);
       } else if (location.href.includes('github.io')) {
         document.querySelector('base').setAttribute('href', `/${base}/`);
       }
     </script>
+    <script
+      src="https://cdn.socket.io/4.0.1/socket.io.min.js"
+      integrity="sha384-LzhRnpGmQP+lOvWruF/lgkcqD+WDVt9fU3H4BWmwP5u5LTmkUGafMcpZKNObVMLU"
+      crossorigin="anonymous"
+    ></script>
 
     <meta
       name="description"
@@ -82,6 +88,7 @@
 
     <link rel="stylesheet" href="index.css" onload="this.media='all'" />
   </head>
+
   <body>
     <app-index></app-index>
     <noscript>Please enable JavaScript to view this websiter!</noscript>

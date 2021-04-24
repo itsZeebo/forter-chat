@@ -27,7 +27,7 @@ async function loadChatHistory() {
       index: 'chat-history',
       body: {
         sort: {
-          timestamp: { order: asc }
+          timestamp: { order: 'asc' }
         },
         query: {
           match_all: {}
@@ -57,19 +57,21 @@ async function sendMessage(sender, content, timestamp) {
         timestamp
       }
     });
+
+    console.log('inserted to es ' + sender, content, timestamp);
   } catch (exception) {
     console.error(exception);
   }
 }
 
-async function getAnswerForQuestion(question) {
+async function getAnswerForQuestion(phrase) {
   try {
     const now = new Date();
     const findMatchingQuestion = await _client.search({
       index: 'chat-history',
       body: {
         size: 1,
-        min_score: 2.0,
+        min_score: 1.9,
         query: {
           bool: {
             should: [
@@ -83,7 +85,7 @@ async function getAnswerForQuestion(question) {
               {
                 match: {
                   content: {
-                    query: question,
+                    query: phrase,
                     fuzziness: 'AUTO',
                     analyzer: 'standard'
                   }
@@ -103,7 +105,7 @@ async function getAnswerForQuestion(question) {
       index: 'chat-history',
       body: {
         sort: {
-          timestamp: { order: asc }
+          timestamp: { order: 'asc' }
         },
         query: {
           bool: {
