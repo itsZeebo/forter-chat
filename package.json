@@ -21,7 +21,8 @@
     "lint:stylelint": "stylelint \"index.css\" --ignore-path .gitignore",
     "lit:type-checking": "lit-analyzer \"src/{components,pages}/**/*.js\" --strict",
     "serve": "web-dev-server --watch",
-    "start": "npm run serve",
+    "start": "npm-run-all --parallel serve start:server",
+    "start:server": "cd server && npm run start:dev",
     "test": "echo \"Error: no test specified\"",
     "type-checking": "tsc --noEmit && npm run lit:type-checking"
   },
