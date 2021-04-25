@@ -5,14 +5,14 @@ let _client;
 
 function initClient() {
   _client = new Client({
-    // cloud: {
-    //   id: process.env.ES_CLOUD_ID
-    // },
-    // auth: {
-    //   username: process.env.ES_USER,
-    //   password: process.env.ES_PASSWORD
-    // },
-    node: 'http://localhost:9200',
+    cloud: {
+      id: process.env.ES_CLOUD_ID
+    },
+    auth: {
+      username: process.env.ES_USER,
+      password: process.env.ES_PASSWORD
+    },
+    // node: 'http://localhost:9200',
     pingTimeout: 30000,
     maxRetries: 5,
     resurrectStrategy: 'optimistic'
