@@ -1,3 +1,5 @@
+import confetti from 'canvas-confetti';
+
 import { html, css, query } from '../components/base';
 import { urlForName } from '../router';
 import { PageElement } from '../helpers/page-element';
@@ -66,6 +68,12 @@ export class PageHome extends PageElement {
 
     this.username = username;
     connectSocket(username);
+    confetti({
+      particleCount: 200,
+      spread: 200,
+      origin: { y: 0.6 },
+      colors: ['#0084ff', '#144a7c', '#ddd']
+    });
   }
 }
 
