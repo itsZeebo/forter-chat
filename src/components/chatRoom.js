@@ -9,6 +9,8 @@ import {
 } from '../helpers/general-styles';
 
 const UNSUBSCRIBERS = [];
+const USER_COLORS = {};
+
 export class ChatRoom extends LitElement {
   static get properties() {
     return {
@@ -21,6 +23,8 @@ export class ChatRoom extends LitElement {
     super.connectedCallback();
     UNSUBSCRIBERS.push(
       registerToSocket('message', ([sender, content, timestamp]) => {
+        if (!USER_COLORS[sender]) USER_COLORS[sender] = this._getRandomColor();
+
         this.messages = [
           ...(this.messages || []),
           { sender, content, timestamp }
@@ -37,11 +41,17 @@ export class ChatRoom extends LitElement {
     );
 
     UNSUBSCRIBERS.push(
-      registerToSocket(
-        'getHistory',
-        ([{ messages }]) =>
-          (this.messages = [...(this.messages || []), ...messages])
-      )
+      registerToSocket('getHistory', ([{ messages }]) => {
+        const uniqueSenders = this._getUniqueSenders(messages);
+
+        // Initialize the user colors
+        uniqueSenders.map(
+          (sender) => (USER_COLORS[sender] = this._getRandomColor())
+        );
+
+        // Initialize the messages
+        this.messages = [...(this.messages || []), ...messages];
+      })
     );
   }
 
@@ -96,7 +106,7 @@ export class ChatRoom extends LitElement {
           box-sizing: border-box;
         }
         .message {
-          margin: 10px;
+          margin-top: 10px;
           min-width: 150px;
           position: relative;
           padding: 10px;
@@ -105,6 +115,9 @@ export class ChatRoom extends LitElement {
           background-color: var(--light-background);
           box-shadow: 0 4px 7px rgba(0, 0, 0, 0.15);
           animation: SlideRight 0.3s ease-out;
+        }
+        .message.first {
+          margin-top: 25px;
         }
         .message.me {
           background-color: var(--primary);
@@ -187,16 +200,29 @@ export class ChatRoom extends LitElement {
       ? html`<div class="loader"></div>`
       : html`
           <div class="message-container" id="message-container">
-            ${this.messages.map(
-              ({ sender, timestamp, content }) => html`<div
-                class=${`message ${sender === this.currentUser ? 'me' : ''}`}
+            ${this.messages.map(({ sender, timestamp, content }, index) => {
+              const isFirstInBundle =
+                index === 0 || this.messages[index - 1].sender !== sender;
+              const isMe = sender === this.currentUser;
+
+              return html`<div
+                class=${`message ${isMe ? 'me' : ''} ${
+                  isFirstInBundle ? 'first' : ''
+                }`}
               >
-                <div class="tail"></div>
+                ${isFirstInBundle ? html`<div class="tail"></div>` : ''}
                 <div class="timestamp">${moment(timestamp).fromNow()}</div>
-                <div class="sender">${sender}:</div>
+                ${isFirstInBundle
+                  ? html`<div
+                      class="sender"
+                      style=${isMe ? '' : `color: ${USER_COLORS[sender]}`}
+                    >
+                      ${sender}:
+                    </div>`
+                  : ''}
                 <div class="content">${content}</div>
-              </div>`
-            )}
+              </div>`;
+            })}
           </div>
           <div class="send-message">
             <form @submit=${this._sendMessage}>
@@ -212,6 +238,27 @@ export class ChatRoom extends LitElement {
             </form>
           </div>
         `;
+  }
+
+  /**
+   * Generate a random hsl color
+   *
+   * @returns {String} hsl css color string with a random hue, constant saturation of 100 and random lightness
+   */
+  _getRandomColor() {
+    return `hsl(${Math.round(Math.random() * 360)}, 100%, ${Math.round(
+      Math.random() * (45 - 25) + 25
+    )}%)`;
+  }
+
+  _getUniqueSenders(messages) {
+    const unique = [];
+
+    messages.map(
+      ({ sender }) => !unique.includes(sender) && unique.push(sender)
+    );
+
+    return unique;
   }
 
   /**

@@ -5,14 +5,14 @@ let _client;
 
 function initClient() {
   _client = new Client({
-    cloud: {
-      id: process.env.ES_CLOUD_ID
-    },
-    auth: {
-      username: process.env.ES_USER,
-      password: process.env.ES_PASSWORD
-    },
-    // node: 'http://localhost:9200',
+    // cloud: {
+    //   id: process.env.ES_CLOUD_ID
+    // },
+    // auth: {
+    //   username: process.env.ES_USER,
+    //   password: process.env.ES_PASSWORD
+    // },
+    node: 'http://localhost:9200',
     pingTimeout: 30000,
     maxRetries: 5,
     resurrectStrategy: 'optimistic'
@@ -26,12 +26,17 @@ function initClient() {
  */
 async function loadChatHistory() {
   try {
+    const countResponse = await _client.count({
+      index: 'chat-history'
+    });
+
     const result = await _client.search({
       index: 'chat-history',
       body: {
         sort: {
           timestamp: { order: 'asc' }
         },
+        size: countResponse.body.count,
         query: {
           match_all: {}
         }
@@ -40,7 +45,7 @@ async function loadChatHistory() {
 
     return result.body.hits.hits?.map((hit) => hit._source);
   } catch (exception) {
-    console.error(exception);
+    console.error(JSON.stringify(exception));
   }
 }
 
